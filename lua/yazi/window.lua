@@ -52,12 +52,29 @@ end
 
 ---@param config YaziConfig
 local function get_window_dimensions(config)
-  local height = math.ceil(vim.o.lines * config.floating_window_scaling_factor)
-    - 1
-  local width = math.ceil(vim.o.columns * config.floating_window_scaling_factor)
+  -- some of the sizing logic is borrowed from lazy.nvim
+  -- https://github.com/folke/lazy.nvim/blob/077102c5bfc578693f12377846d427f49bc50076/lua/lazy/view/float.lua?plain=1#L87-L89
+  local function size(max, value)
+    return value > 1 and math.min(value, max) or math.floor(max * value)
+  end
 
-  local row = math.ceil(vim.o.lines - height) / 2
-  local col = math.ceil(vim.o.columns - width) / 2
+  local height
+  local width
+
+  if type(config.floating_window_scaling_factor) == "number" then
+    height = size(vim.o.lines, config.floating_window_scaling_factor)
+    width = size(vim.o.columns, config.floating_window_scaling_factor)
+  else
+    assert(
+      type(config.floating_window_scaling_factor) == "table",
+      "floating_window_scaling_factor must be a number or a table"
+    )
+    height = size(vim.o.lines, config.floating_window_scaling_factor.height)
+    width = size(vim.o.columns, config.floating_window_scaling_factor.width)
+  end
+
+  local row = math.floor((vim.o.lines - height) / 2)
+  local col = math.floor((vim.o.columns - width) / 2)
 
   return {
     height = height,
