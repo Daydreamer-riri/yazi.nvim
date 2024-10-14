@@ -2,25 +2,31 @@
 
 name: Style checking
 
-on: [push, pull_request]
+on:
+  pull_request: ~
+  push:
+    branches:
+      - main
 
 jobs:
   prettier:
     runs-on: ubuntu-22.04
     name: prettier
     steps:
-      - uses: actions/checkout@v4.1.7
-      - uses: actions/setup-node@v4.0.3
+      - uses: actions/checkout@v4.2.1
+      - uses: pnpm/action-setup@v4.0.0
+      - uses: actions/setup-node@v4.0.4
         with:
           node-version-file: .nvmrc
-      - run: npm ci
-      - run: npm run prettier
+          cache: "pnpm"
+      - run: pnpm install
+      - run: pnpm prettier
 
   stylua:
     name: stylua
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v4.2.1
       - uses: JohnnyMorganz/stylua-action@v4.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

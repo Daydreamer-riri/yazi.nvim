@@ -2,9 +2,26 @@ local assert = require("luassert")
 local config_module = require("yazi.config")
 local keybinding_helpers = require("yazi.keybinding_helpers")
 local match = require("luassert.match")
+local plenary_path = require("plenary.path")
 local stub = require("luassert.stub")
 
 describe("keybinding_helpers", function()
+  local vim_cmd_stub
+  local vim_fn_stub
+  local vim_notify_stub
+  local snapshot
+
+  before_each(function()
+    snapshot = assert:snapshot()
+    vim_fn_stub = stub(vim.fn, "getcwd")
+    vim_notify_stub = stub(vim, "notify")
+    vim_cmd_stub = stub(vim, "cmd")
+  end)
+
+  after_each(function()
+    snapshot:revert()
+  end)
+
   describe("grep_in_directory", function()
     it("should grep in the parent directory for a file", function()
       local config = config_module.default()
@@ -117,5 +134,63 @@ describe("keybinding_helpers", function()
         :totable()
       assert.same({ "/tmp/file1", "/tmp/file2" }, paths)
     end)
+  end)
+
+  describe("change_working_directory", function()
+    it(
+      "should change the working directory when the cwd is available from ya",
+      function()
+        -- When yazi changes a directory, knowledge of that cwd becomes
+        -- available to the plugin. This information is used to update the cwd
+        -- in neovim
+
+        ---@diagnostic disable-next-line: missing-fields
+        keybinding_helpers.change_working_directory({
+          ---@diagnostic disable-next-line: missing-fields
+          ya_process = { cwd = "/tmp" },
+        })
+
+        assert
+          .stub(vim_cmd_stub)
+          .was_called_with({ cmd = "cd", args = { "/tmp" } })
+
+        assert.stub(vim_notify_stub).was_called_with('cwd changed to "/tmp"')
+      end
+    )
+
+    it("uses yazi's input_path if no cwd is available yet", function()
+      ---@diagnostic disable-next-line: missing-fields
+      keybinding_helpers.change_working_directory({
+        input_path = plenary_path:new("/tmp"),
+        ---@diagnostic disable-next-line: missing-fields
+        ya_process = {
+          cwd = nil,
+        },
+      })
+
+      assert
+        .stub(vim_cmd_stub)
+        .was_called_with({ cmd = "cd", args = { "/tmp" } })
+      assert.stub(vim_notify_stub).was_called_with('cwd changed to "/tmp"')
+    end)
+
+    it(
+      "should not change the working directory if the new cwd is already the current one",
+      function()
+        vim_fn_stub.returns("/tmp")
+        ---@diagnostic disable-next-line: missing-fields
+        keybinding_helpers.change_working_directory({
+          input_path = plenary_path:new("/tmp"),
+          ---@diagnostic disable-next-line: missing-fields
+          ya_process = {
+            cwd = "/tmp",
+          },
+        })
+
+        assert.stub(vim_fn_stub).was_called_with()
+        assert.stub(vim_cmd_stub).was_not_called()
+        assert.stub(vim_notify_stub).was_not_called()
+      end
+    )
   end)
 end)

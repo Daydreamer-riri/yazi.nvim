@@ -1,5 +1,34 @@
 # Changelog
 
+## [6.4.1](https://github.com/mikavilpas/yazi.nvim/compare/v6.4.0...v6.4.1) (2024-10-05)
+
+
+### Bug Fixes
+
+* YaziRenamedOrMoved events could not be published in practice ([#499](https://github.com/mikavilpas/yazi.nvim/issues/499)) ([e379516](https://github.com/mikavilpas/yazi.nvim/commit/e37951699881885f1cfee5f3d794ad10da0a95dd))
+
+## [6.4.0](https://github.com/mikavilpas/yazi.nvim/compare/v6.3.1...v6.4.0) (2024-10-04)
+
+
+### Features
+
+* emit YaziRenamedOrMoved event when files are renamed or moved ([#495](https://github.com/mikavilpas/yazi.nvim/issues/495)) ([c4befd1](https://github.com/mikavilpas/yazi.nvim/commit/c4befd124f81741de987633e2ea08df0f996031f))
+
+## [6.3.1](https://github.com/mikavilpas/yazi.nvim/compare/v6.3.0...v6.3.1) (2024-10-02)
+
+
+### Bug Fixes
+
+* use input dir if needed when changing cwd ([#487](https://github.com/mikavilpas/yazi.nvim/issues/487)) ([33857bf](https://github.com/mikavilpas/yazi.nvim/commit/33857bf7a32bdfff1a5236b80905e4c4f5ba4bd7))
+
+## [6.3.0](https://github.com/mikavilpas/yazi.nvim/compare/v6.2.0...v6.3.0) (2024-09-22)
+
+
+### Features
+
+* add keymap for changing cwd to current directory ([#474](https://github.com/mikavilpas/yazi.nvim/issues/474)) ([d63165d](https://github.com/mikavilpas/yazi.nvim/commit/d63165d5e122f27f985591bd4803c0222383f770))
+* expose the current working directory to keybindings ([#471](https://github.com/mikavilpas/yazi.nvim/issues/471)) ([445f487](https://github.com/mikavilpas/yazi.nvim/commit/445f4877d8b80f9d24ea1f9b890c878211878d63))
+
 ## [6.2.0](https://github.com/mikavilpas/yazi.nvim/compare/v6.1.0...v6.2.0) (2024-09-16)
 
 

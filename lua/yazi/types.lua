@@ -34,9 +34,11 @@
 ---@field cycle_open_buffers? YaziKeymap # When Neovim has multiple splits open and visible, make yazi jump to the directory of the next one
 ---@field copy_relative_path_to_selected_files? YaziKeymap # Copy the relative paths of the selected files to the clipboard
 ---@field send_to_quickfix_list? YaziKeymap # Send the selected files to the quickfix list for later processing
+---@field change_working_directory? YaziKeymap # Change working directory to the directory opened by yazi
 
 ---@class (exact) YaziActiveContext # context state for a single yazi session
 ---@field api YaziProcessApi
+---@field ya_process YaProcess the ya process that is currently running, listening for events from yazi
 ---@field input_path Path the path that is first selected by yazi when it's opened
 ---@field cycled_file? RenameableBuffer the last file that was cycled to with e.g. the <tab> key
 
