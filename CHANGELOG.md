@@ -1,5 +1,19 @@
 # Changelog
 
+## [6.4.3](https://github.com/mikavilpas/yazi.nvim/compare/v6.4.2...v6.4.3) (2024-10-17)
+
+
+### Bug Fixes
+
+* not being able to resolve the last_directory ([#523](https://github.com/mikavilpas/yazi.nvim/issues/523)) ([6c24b52](https://github.com/mikavilpas/yazi.nvim/commit/6c24b52074db2c7db55a92ff5ce845924b4d0a50))
+
+## [6.4.2](https://github.com/mikavilpas/yazi.nvim/compare/v6.4.1...v6.4.2) (2024-10-16)
+
+
+### Bug Fixes
+
+* report parent directory of input_path as last_directory ([#519](https://github.com/mikavilpas/yazi.nvim/issues/519)) ([9ff955a](https://github.com/mikavilpas/yazi.nvim/commit/9ff955af4bd0a92b9c5dc76d24e7d24ec0d1748f))
+
 ## [6.4.1](https://github.com/mikavilpas/yazi.nvim/compare/v6.4.0...v6.4.1) (2024-10-05)
 
 

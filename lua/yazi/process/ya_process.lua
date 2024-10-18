@@ -130,6 +130,7 @@ function YaProcess:start()
         Log:debug(string.format("ya stdout error: '%s'", data))
       end
       data = data or ""
+      data = data:gsub("\n+", "\n")
 
       Log:debug(string.format("ya stdout: '%s'", data))
 
@@ -170,6 +171,9 @@ function YaProcess:process_events(events)
       end)
     elseif event.type == "cd" then
       ---@cast event YaziHoverEvent
+      Log:debug(
+        string.format("Changing the cwd from %s to %s", self.cwd, event.url)
+      )
       self.cwd = event.url
     else
       self.events[#self.events + 1] = event
