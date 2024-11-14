@@ -1,6 +1,10 @@
+import { flavors } from "@catppuccin/palette"
+import { rgbify } from "@tui-sandbox/library/dist/src/client/color-utilities"
+import type { MyTestDirectoryFile } from "MyTestDirectory"
+
 describe("reading events", () => {
   beforeEach(() => {
-    cy.visit("http://localhost:5173")
+    cy.visit("/")
   })
 
   it("can read 'cd' events and use telescope in the latest directory", () => {
@@ -92,7 +96,7 @@ describe("reading events", () => {
 
 describe("'rename' events", () => {
   beforeEach(() => {
-    cy.visit("http://localhost:5173")
+    cy.visit("/")
   })
 
   it("can read 'rename' events and update the buffer name when the file was renamed", () => {
@@ -101,8 +105,13 @@ describe("'rename' events", () => {
       cy.contains(dir.contents["initial-file.txt"].name)
       cy.contains("If you see this text, Neovim is ready!")
 
-      // start yazi
+      // start yazi and wait for the current file to be highlighted
       cy.typeIntoTerminal("{upArrow}")
+      cy.contains(dir.contents["initial-file.txt"].name).should(
+        "have.css",
+        "background-color",
+        rgbify(flavors.macchiato.colors.text.rgb),
+      )
 
       // start file renaming
       cy.typeIntoTerminal("r")
@@ -120,6 +129,10 @@ describe("'rename' events", () => {
 
       // the buffer name should now be updated
       cy.contains(newFileName)
+
+      // the file should be saveable
+      cy.typeIntoTerminal(":w{enter}")
+      cy.contains("E13").should("not.exist")
     })
   })
 
@@ -209,7 +222,9 @@ describe("'rename' events", () => {
       cy.typeIntoTerminal("{upArrow}")
 
       // move to another directory
-      cy.typeIntoTerminal(`/${dir.contents["dir with spaces"].name}{enter}`)
+      cy.typeIntoTerminal(
+        `/${"dir with spaces" satisfies MyTestDirectoryFile}{enter}`,
+      )
       cy.typeIntoTerminal("{rightArrow}")
       cy.contains("this is the first file")
 
