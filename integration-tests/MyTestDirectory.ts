@@ -14,6 +14,36 @@ export const MyTestDirectorySchema = z.object({
   name: z.literal("test-environment/"),
   type: z.literal("directory"),
   contents: z.object({
+    ".config": z.object({
+      name: z.literal(".config/"),
+      type: z.literal("directory"),
+      contents: z.object({
+        nvim: z.object({
+          name: z.literal("nvim/"),
+          type: z.literal("directory"),
+          contents: z.object({
+            "init.lua": z.object({
+              name: z.literal("init.lua"),
+              type: z.literal("file"),
+              extension: z.literal("lua"),
+              stem: z.literal("init."),
+            }),
+          }),
+        }),
+        yazi: z.object({
+          name: z.literal("yazi/"),
+          type: z.literal("directory"),
+          contents: z.object({
+            "keymap.toml": z.object({
+              name: z.literal("keymap.toml"),
+              type: z.literal("file"),
+              extension: z.literal("toml"),
+              stem: z.literal("keymap."),
+            }),
+          }),
+        }),
+      }),
+    }),
     "config-modifications": z.object({
       name: z.literal("config-modifications/"),
       type: z.literal("directory"),
@@ -71,6 +101,12 @@ export const MyTestDirectorySchema = z.object({
           extension: z.literal("lua"),
           stem: z.literal("modify_yazi_config_log_yazi_closed_successfully."),
         }),
+        "notify_custom_events.lua": z.object({
+          name: z.literal("notify_custom_events.lua"),
+          type: z.literal("file"),
+          extension: z.literal("lua"),
+          stem: z.literal("notify_custom_events."),
+        }),
         "notify_hover_events.lua": z.object({
           name: z.literal("notify_hover_events.lua"),
           type: z.literal("file"),
@@ -115,11 +151,11 @@ export const MyTestDirectorySchema = z.object({
         }),
       }),
     }),
-    "file.txt": z.object({
-      name: z.literal("file.txt"),
+    "file2.txt": z.object({
+      name: z.literal("file2.txt"),
       type: z.literal("file"),
       extension: z.literal("txt"),
-      stem: z.literal("file."),
+      stem: z.literal("file2."),
     }),
     "initial-file.txt": z.object({
       name: z.literal("initial-file.txt"),
@@ -181,12 +217,6 @@ export const MyTestDirectorySchema = z.object({
         }),
       }),
     }),
-    "test-setup.lua": z.object({
-      name: z.literal("test-setup.lua"),
-      type: z.literal("file"),
-      extension: z.literal("lua"),
-      stem: z.literal("test-setup."),
-    }),
   }),
 })
 
@@ -199,6 +229,11 @@ export type MyTestDirectoryContentsSchemaType = z.infer<
 export type MyTestDirectory = MyTestDirectoryContentsSchemaType["contents"]
 
 export const testDirectoryFiles = z.enum([
+  ".config/nvim/init.lua",
+  ".config/nvim",
+  ".config/yazi/keymap.toml",
+  ".config/yazi",
+  ".config",
   "config-modifications/add_command_to_count_open_buffers.lua",
   "config-modifications/disable_a_keybinding.lua",
   "config-modifications/modify_yazi_config_and_add_hovered_buffer_background.lua",
@@ -206,6 +241,7 @@ export const testDirectoryFiles = z.enum([
   "config-modifications/modify_yazi_config_and_open_multiple_files.lua",
   "config-modifications/modify_yazi_config_and_set_help_key.lua",
   "config-modifications/modify_yazi_config_log_yazi_closed_successfully.lua",
+  "config-modifications/notify_custom_events.lua",
   "config-modifications/notify_hover_events.lua",
   "config-modifications/notify_rename_events.lua",
   "config-modifications/report_loaded_yazi_modules.lua",
@@ -214,7 +250,7 @@ export const testDirectoryFiles = z.enum([
   "dir with spaces/file1.txt",
   "dir with spaces/file2.txt",
   "dir with spaces",
-  "file.txt",
+  "file2.txt",
   "initial-file.txt",
   "other-subdirectory/other-sub-file.txt",
   "other-subdirectory",
@@ -225,7 +261,6 @@ export const testDirectoryFiles = z.enum([
   "routes",
   "subdirectory/subdirectory-file.txt",
   "subdirectory",
-  "test-setup.lua",
   ".",
 ])
 export type MyTestDirectoryFile = z.infer<typeof testDirectoryFiles>
