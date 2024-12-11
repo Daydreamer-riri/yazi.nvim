@@ -24,10 +24,10 @@ describe("get_buffers_that_need_renaming_after_yazi_exited", function()
         rename_event
       )
 
-    assert.is_equal(vim.tbl_count(rename_instructions), 1)
+    assert.equal(vim.tbl_count(rename_instructions), 1)
 
     local result1 = rename_instructions[1]
-    assert.is_equal("/my-tmp/file2", result1.path.filename)
+    assert.equal("/my-tmp/file2", result1.path.filename)
     assert.is_number(result1.bufnr)
   end)
 
@@ -48,9 +48,9 @@ describe("get_buffers_that_need_renaming_after_yazi_exited", function()
           rename_event
         )
 
-      assert.is_equal(vim.tbl_count(rename_instructions), 1)
+      assert.equal(vim.tbl_count(rename_instructions), 1)
       local result = rename_instructions[1]
-      assert.is_equal("/my-tmp/dir2/file", result.path.filename)
+      assert.equal("/my-tmp/dir2/file", result.path.filename)
     end
   )
 
@@ -69,7 +69,7 @@ describe("get_buffers_that_need_renaming_after_yazi_exited", function()
         rename_event
       )
 
-    assert.is_equal(vim.tbl_count(rename_instructions), 0)
+    assert.equal(vim.tbl_count(rename_instructions), 0)
   end)
 end)
 
@@ -97,7 +97,7 @@ describe("process_events_emitted_from_yazi", function()
 
     local open_buffers = utils.get_open_buffers()
     for _, buffer in ipairs(open_buffers) do
-      assert.is_not_equal("/my-tmp/file1", buffer.path.filename)
+      assert.are_not_equal("/my-tmp/file1", buffer.path.filename)
     end
   end)
 
@@ -124,7 +124,7 @@ describe("process_events_emitted_from_yazi", function()
 
     local open_buffers = utils.get_open_buffers()
     for _, buffer in ipairs(open_buffers) do
-      assert.is_not_equal("/my-tmp/file1", buffer.path.filename)
+      assert.are_not_equal("/my-tmp/file1", buffer.path.filename)
     end
   end)
 end)
