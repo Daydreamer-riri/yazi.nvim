@@ -56,7 +56,7 @@ For previewing images with yazi, see Yazi's documentation related to Neovim
 
 First, make sure you have the requirements:
 
-- Neovim 0.10.x or later
+- Neovim 0.10.2 or later (nightly)
 - yazi [0.3.0](https://github.com/sxyazi/yazi/releases/tag/v0.3.0) or later
 - New features might require a recent version of yazi (see
   [installing-yazi-from-source.md](documentation/installing-yazi-from-source.md))
@@ -276,6 +276,13 @@ You can optionally configure yazi.nvim by setting any of the options below.
       end,
       -- `grealpath` on OSX, (GNU) `realpath` otherwise
       resolve_relative_path_application = ""
+    },
+
+    future_features = {
+      -- Whether to use `ya emit reveal` to reveal files in the file manager.
+      -- This requires yazi 0.4.0 but will likely be the default in the
+      -- future.
+      ya_emit_reveal = true,
     },
   },
 }

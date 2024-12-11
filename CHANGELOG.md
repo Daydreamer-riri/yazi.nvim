@@ -1,5 +1,31 @@
 # Changelog
 
+## [6.8.0](https://github.com/mikavilpas/yazi.nvim/compare/v6.7.0...v6.8.0) (2024-12-08)
+
+
+### Features
+
+* can use `ya emit` for more accurate &lt;tab&gt; to file (opt-in) ([#604](https://github.com/mikavilpas/yazi.nvim/issues/604)) ([b81e03c](https://github.com/mikavilpas/yazi.nvim/commit/b81e03c64bc1635acb15f536948b243ae975c960))
+
+## [6.7.0](https://github.com/mikavilpas/yazi.nvim/compare/v6.6.1...v6.7.0) (2024-12-07)
+
+
+### Features
+
+* using folke/snacks.nvim can preserve window layouts on deletes ([5c0f9b2](https://github.com/mikavilpas/yazi.nvim/commit/5c0f9b24ba0b87b8e2a79a685ac4a95577961fff))
+
+## [6.6.1](https://github.com/mikavilpas/yazi.nvim/compare/v6.6.0...v6.6.1) (2024-12-02)
+
+
+### Bug Fixes
+
+* "invalid buffer id x" error when renaming a buffer ([6884a0f](https://github.com/mikavilpas/yazi.nvim/commit/6884a0feedecc6e1e274860893a2827d88740c6a))
+
+
+### Performance Improvements
+
+* **tests:** use `cy.runExCommand` in all tests ([97093b1](https://github.com/mikavilpas/yazi.nvim/commit/97093b16f3c9d027706bb97c4b65117e78d846d9))
+
 ## [6.6.0](https://github.com/mikavilpas/yazi.nvim/compare/v6.5.1...v6.6.0) (2024-11-16)
 
 

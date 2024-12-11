@@ -39,6 +39,7 @@ vim.env.YAZI_NVIM_LOG_PATH =
   vim.fn.fnamemodify(vim.uv.os_environ().HOME .. "/../../.repro/yazi.log", ":p")
 
 -- install the following plugins
+---@module "lazy"
 ---@type LazySpec
 local plugins = {
   {
@@ -76,6 +77,7 @@ local plugins = {
   { "nvim-telescope/telescope.nvim", lazy = true },
   { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
   { "https://github.com/MagicDuck/grug-far.nvim", opts = {} },
+  { "folke/snacks.nvim", opts = {} },
 }
 require("lazy").setup({ spec = plugins })
 

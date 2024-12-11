@@ -9,6 +9,10 @@ local M = {}
 ---@return string
 function M.relative_path(config, current_file_dir, selected_file)
   local command = config.integrations.resolve_relative_path_application
+  assert(
+    command ~= nil,
+    "resolve_relative_path_application must be set. Please report this as a bug."
+  )
 
   if vim.fn.executable(command) == 0 then
     local msg = string.format(
@@ -334,6 +338,17 @@ function M.is_buffer_open(path)
   return false
 end
 
+function M.bufdelete(bufnr)
+  local ok, bufdelete = pcall(function()
+    return require("snacks.bufdelete")
+  end)
+  if ok then
+    return bufdelete.delete({ buf = bufnr, force = true })
+  else
+    vim.api.nvim_buf_delete(bufnr, { force = true })
+  end
+end
+
 ---@param instruction RenameableBuffer
 ---@return nil
 function M.rename_or_close_buffer(instruction)
@@ -349,9 +364,11 @@ function M.rename_or_close_buffer(instruction)
     vim.api.nvim_buf_set_name(instruction.bufnr, instruction.path.filename)
   end)
   vim.schedule(function()
-    vim.api.nvim_buf_call(instruction.bufnr, function()
-      vim.cmd("edit!")
-    end)
+    if vim.api.nvim_buf_is_valid(instruction.bufnr) then
+      vim.api.nvim_buf_call(instruction.bufnr, function()
+        vim.cmd("edit!")
+      end)
+    end
   end)
 end
 
