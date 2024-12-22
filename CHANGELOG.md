@@ -1,5 +1,19 @@
 # Changelog
 
+## [6.11.0](https://github.com/mikavilpas/yazi.nvim/compare/v6.10.0...v6.11.0) (2024-12-22)
+
+
+### Features
+
+* add title to notify messages ([51c0d14](https://github.com/mikavilpas/yazi.nvim/commit/51c0d1453b8991f96caa5714b13db8f6a8651dba))
+
+## [6.10.0](https://github.com/mikavilpas/yazi.nvim/compare/v6.9.0...v6.10.0) (2024-12-15)
+
+
+### Features
+
+* add fzf-lua integration for grepping in files and dirs ([56b80f3](https://github.com/mikavilpas/yazi.nvim/commit/56b80f3e7cf6f4559fa2898cb33844eb10f0d97d))
+
 ## [6.9.0](https://github.com/mikavilpas/yazi.nvim/compare/v6.8.0...v6.9.0) (2024-12-12)
 
 

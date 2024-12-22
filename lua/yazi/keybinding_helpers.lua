@@ -163,16 +163,33 @@ end
 ---@return nil
 function YaziOpenerActions.grep_in_directory(config, chosen_file)
   if config.integrations.grep_in_directory == nil then
+    -- the user has opted out of this feature for some reason. Do nothing.
     return
   end
-  local last_directory = utils.dir_of(chosen_file).filename
-  config.integrations.grep_in_directory(last_directory)
+  local cwd = vim.uv.cwd()
+  local last_directory = utils.dir_of(chosen_file):make_relative(cwd)
+
+  if config.integrations.grep_in_directory == "telescope" then
+    require("telescope.builtin").live_grep({
+      search = "",
+      prompt_title = "Grep in " .. last_directory,
+      cwd = last_directory,
+    })
+  elseif config.integrations.grep_in_directory == "fzf-lua" then
+    require("fzf-lua").live_grep({
+      search_paths = { last_directory },
+    })
+  else
+    -- the user has a custom implementation. Call it.
+    config.integrations.grep_in_directory(last_directory)
+  end
 end
 
 ---@param config YaziConfig
 ---@param chosen_files string[]
 function YaziOpenerActions.grep_in_selected_files(config, chosen_files)
   if config.integrations.grep_in_selected_files == nil then
+    -- the user has opted out of this feature for some reason. Do nothing.
     return
   end
 
@@ -182,7 +199,24 @@ function YaziOpenerActions.grep_in_selected_files(config, chosen_files)
     table.insert(paths, plenary_path:new(path))
   end
 
-  config.integrations.grep_in_selected_files(paths)
+  ---@type string[]
+  local files = {}
+  for _, path in ipairs(paths) do
+    files[#files + 1] = path:make_relative(vim.uv.cwd()):gsub(" ", "\\ ")
+  end
+
+  if config.integrations.grep_in_selected_files == "telescope" then
+    require("telescope.builtin").live_grep({
+      search = "",
+      prompt_title = string.format("Grep in %d paths", #files),
+      search_dirs = files,
+    })
+  elseif config.integrations.grep_in_selected_files == "fzf-lua" then
+    require("fzf-lua").live_grep({ search_paths = files })
+  else
+    -- the user has a custom implementation. Call it.
+    config.integrations.grep_in_selected_files(paths)
+  end
 end
 
 ---@param config YaziConfig
@@ -199,10 +233,10 @@ function YaziOpenerActions.replace_in_directory(config, chosen_file)
 
   if not success then
     local detail = vim.inspect({
-      message = "yazi.nvim: error replacing with grug-far.nvim.",
+      message = "error replacing with grug-far.nvim.",
       error = result_or_error,
     })
-    vim.notify(detail, vim.log.levels.WARN)
+    vim.notify(detail, vim.log.levels.WARN, { title = "yazi.nvim" })
     Log:debug(vim.inspect({ message = detail, error = result_or_error }))
   end
 end
@@ -226,10 +260,10 @@ function YaziOpenerActions.replace_in_selected_files(config, chosen_files)
 
   if not success then
     local detail = vim.inspect({
-      message = "yazi.nvim: error replacing with grug-far.nvim.",
+      message = "error replacing with grug-far.nvim.",
       error = result_or_error,
     })
-    vim.notify(detail, vim.log.levels.WARN)
+    vim.notify(detail, vim.log.levels.WARN, { title = "yazi.nvim" })
     Log:debug(vim.inspect({ message = detail, error = result_or_error }))
   end
 end
