@@ -6,7 +6,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
     "git",
     "clone",
     "--filter=blob:none",
-    "--branch=v11.14.1",
+    "--branch=v11.16.0",
     lazyrepo,
     lazypath,
   })
@@ -64,20 +64,22 @@ local plugins = {
         ya_emit_open = true,
       },
       integrations = {
-        grep_in_directory = function(directory)
-          require("telescope.builtin").live_grep({
-            -- disable previewer to be able to see the full directory name. The
-            -- tests can make assertions on this path.
-            previewer = false,
-            search = "",
-            prompt_title = "Grep in " .. directory,
-            cwd = directory,
-          })
-        end,
+        grep_in_directory = "telescope",
       },
     },
   },
-  { "nvim-telescope/telescope.nvim", lazy = true },
+  {
+    "nvim-telescope/telescope.nvim",
+    lazy = true,
+    opts = {
+      pickers = {
+        live_grep = {
+          theme = "dropdown",
+        },
+      },
+    },
+  },
+  { "ibhagwan/fzf-lua" },
   { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
   { "https://github.com/MagicDuck/grug-far.nvim", opts = {} },
   { "folke/snacks.nvim", opts = {} },
