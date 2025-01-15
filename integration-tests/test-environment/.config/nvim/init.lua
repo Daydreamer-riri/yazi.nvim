@@ -62,6 +62,7 @@ local plugins = {
       log_level = vim.log.levels.DEBUG,
       future_features = {
         ya_emit_open = true,
+        ya_emit_reveal = true,
       },
       integrations = {
         grep_in_directory = "telescope",
@@ -83,6 +84,23 @@ local plugins = {
   { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
   { "https://github.com/MagicDuck/grug-far.nvim", opts = {} },
   { "folke/snacks.nvim", opts = {} },
+  {
+    "neovim/nvim-lspconfig",
+    dependencies = {
+      { "williamboman/mason.nvim", opts = {} },
+      { "williamboman/mason-lspconfig.nvim", opts = {} },
+    },
+    config = function()
+      ---@diagnostic disable-next-line: missing-fields
+      require("mason-lspconfig").setup({
+        handlers = {
+          lua_ls = function()
+            require("lspconfig")["lua_ls"].setup({})
+          end,
+        },
+      })
+    end,
+  },
 }
 require("lazy").setup({ spec = plugins })
 

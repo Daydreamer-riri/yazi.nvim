@@ -28,6 +28,12 @@ export const MyTestDirectorySchema = z.object({
               extension: z.literal("lua"),
               stem: z.literal("init."),
             }),
+            "prepare.lua": z.object({
+              name: z.literal("prepare.lua"),
+              type: z.literal("file"),
+              extension: z.literal("lua"),
+              stem: z.literal("prepare."),
+            }),
           }),
         }),
         yazi: z.object({
@@ -99,6 +105,12 @@ export const MyTestDirectorySchema = z.object({
           extension: z.literal("lua"),
           stem: z.literal("modify_yazi_config_do_not_use_ya_emit_open."),
         }),
+        "modify_yazi_config_don't_use_ya_emit_reveal.lua": z.object({
+          name: z.literal("modify_yazi_config_don't_use_ya_emit_reveal.lua"),
+          type: z.literal("file"),
+          extension: z.literal("lua"),
+          stem: z.literal("modify_yazi_config_don't_use_ya_emit_reveal."),
+        }),
         "modify_yazi_config_log_yazi_closed_successfully.lua": z.object({
           name: z.literal(
             "modify_yazi_config_log_yazi_closed_successfully.lua",
@@ -112,12 +124,6 @@ export const MyTestDirectorySchema = z.object({
           type: z.literal("file"),
           extension: z.literal("lua"),
           stem: z.literal("modify_yazi_config_use_fzf_lua."),
-        }),
-        "modify_yazi_config_use_ya_emit_reveal.lua": z.object({
-          name: z.literal("modify_yazi_config_use_ya_emit_reveal.lua"),
-          type: z.literal("file"),
-          extension: z.literal("lua"),
-          stem: z.literal("modify_yazi_config_use_ya_emit_reveal."),
         }),
         "notify_custom_events.lua": z.object({
           name: z.literal("notify_custom_events.lua"),
@@ -211,6 +217,30 @@ export const MyTestDirectorySchema = z.object({
       extension: z.literal("txt"),
       stem: z.literal("initial-file."),
     }),
+    "lua-project": z.object({
+      name: z.literal("lua-project/"),
+      type: z.literal("directory"),
+      contents: z.object({
+        ".luarc.json": z.object({
+          name: z.literal(".luarc.json"),
+          type: z.literal("file"),
+          extension: z.literal("json"),
+          stem: z.literal(".luarc."),
+        }),
+        "config.lua": z.object({
+          name: z.literal("config.lua"),
+          type: z.literal("file"),
+          extension: z.literal("lua"),
+          stem: z.literal("config."),
+        }),
+        "init.lua": z.object({
+          name: z.literal("init.lua"),
+          type: z.literal("file"),
+          extension: z.literal("lua"),
+          stem: z.literal("init."),
+        }),
+      }),
+    }),
     "other-subdirectory": z.object({
       name: z.literal("other-subdirectory/"),
       type: z.literal("directory"),
@@ -278,6 +308,7 @@ export type MyTestDirectory = MyTestDirectoryContentsSchemaType["contents"]
 
 export const testDirectoryFiles = z.enum([
   ".config/nvim/init.lua",
+  ".config/nvim/prepare.lua",
   ".config/nvim",
   ".config/yazi/keymap.toml",
   ".config/yazi",
@@ -289,9 +320,9 @@ export const testDirectoryFiles = z.enum([
   "config-modifications/modify_yazi_config_and_open_multiple_files.lua",
   "config-modifications/modify_yazi_config_and_set_help_key.lua",
   "config-modifications/modify_yazi_config_do_not_use_ya_emit_open.lua",
+  "config-modifications/modify_yazi_config_don't_use_ya_emit_reveal.lua",
   "config-modifications/modify_yazi_config_log_yazi_closed_successfully.lua",
   "config-modifications/modify_yazi_config_use_fzf_lua.lua",
-  "config-modifications/modify_yazi_config_use_ya_emit_reveal.lua",
   "config-modifications/notify_custom_events.lua",
   "config-modifications/notify_hover_events.lua",
   "config-modifications/notify_rename_events.lua",
@@ -308,6 +339,10 @@ export const testDirectoryFiles = z.enum([
   "highlights/file_3.txt",
   "highlights",
   "initial-file.txt",
+  "lua-project/.luarc.json",
+  "lua-project/config.lua",
+  "lua-project/init.lua",
+  "lua-project",
   "other-subdirectory/other-sub-file.txt",
   "other-subdirectory",
   "routes/posts.$postId/adjacent-file.txt",

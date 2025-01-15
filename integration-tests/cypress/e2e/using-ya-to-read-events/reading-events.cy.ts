@@ -36,9 +36,9 @@ describe("reading events", () => {
 
     cy.startNeovim({
       filename: { openInVerticalSplits: ["initial-file.txt", "file2.txt"] },
-    }).then((dir) => {
+    }).then((nvim) => {
       // the default file should already be open
-      cy.contains(dir.contents["initial-file.txt"].name)
+      cy.contains(nvim.dir.contents["initial-file.txt"].name)
       cy.contains("If you see this text, Neovim is ready!")
       cy.contains("Hello")
 
@@ -61,14 +61,16 @@ describe("reading events", () => {
 
       // internally, we should have received a trash event from yazi, and yazi.nvim should
       // have closed the buffer
-      cy.contains(dir.contents["initial-file.txt"].name).should("not.exist")
+      cy.contains(nvim.dir.contents["initial-file.txt"].name).should(
+        "not.exist",
+      )
       cy.contains("If you see this text, Neovim is ready").should("not.exist")
 
       // make sure two windows are open. The test environment uses snacks.nvim
       // which should make sure the window layout is preserved when closing
       // the deleted buffer. The default in neovim is to also close the
       // window.
-      cy.runExCommand({ command: `echo winnr("$")` }).then((result) => {
+      nvim.runExCommand({ command: `echo winnr("$")` }).then((result) => {
         expect(result.value).to.match(/2/)
       })
     })
@@ -79,15 +81,15 @@ describe("reading events", () => {
 
     cy.startNeovim({
       filename: { openInVerticalSplits: ["initial-file.txt", "file2.txt"] },
-    }).then((dir) => {
+    }).then((nvim) => {
       // the default file should already be open
-      cy.contains(dir.contents["initial-file.txt"].name)
+      cy.contains(nvim.dir.contents["initial-file.txt"].name)
       cy.contains("If you see this text, Neovim is ready!")
       cy.contains("Hello")
 
       // make sure If you see this text, Neovim is ready! is in the correct
       // buffer so that we are editing the correct buffer in this test
-      cy.runExCommand({ command: "echo expand('%')" }).then((result) => {
+      nvim.runExCommand({ command: "echo expand('%')" }).then((result) => {
         expect(result.value).to.match(/initial-file.txt$/)
       })
 
@@ -110,14 +112,14 @@ describe("reading events", () => {
 
       // internally, we should have received a delete event from yazi, and yazi.nvim should
       // have closed the buffer
-      cy.get(dir.contents["initial-file.txt"].name).should("not.exist")
+      cy.get(nvim.dir.contents["initial-file.txt"].name).should("not.exist")
       cy.contains("If you see this text, Neovim is ready").should("not.exist")
 
       // make sure two windows are open. The test environment uses snacks.nvim
       // which should make sure the window layout is preserved when closing
       // the deleted buffer. The default in neovim is to also close the
       // window.
-      cy.runExCommand({ command: `echo winnr("$")` }).then((result) => {
+      nvim.runExCommand({ command: `echo winnr("$")` }).then((result) => {
         expect(result.value).to.match(/2/)
       })
     })
@@ -130,14 +132,14 @@ describe("'rename' events", () => {
   })
 
   it("can read 'rename' events and update the buffer name when the file was renamed", () => {
-    cy.startNeovim().then((dir) => {
+    cy.startNeovim().then((nvim) => {
       // the default file should already be open
-      cy.contains(dir.contents["initial-file.txt"].name)
+      cy.contains(nvim.dir.contents["initial-file.txt"].name)
       cy.contains("If you see this text, Neovim is ready!")
 
       // start yazi and wait for the current file to be highlighted
       cy.typeIntoTerminal("{upArrow}")
-      cy.contains(dir.contents["initial-file.txt"].name).should(
+      cy.contains(nvim.dir.contents["initial-file.txt"].name).should(
         "have.css",
         "background-color",
         rgbify(flavors.macchiato.colors.text.rgb),
@@ -167,9 +169,9 @@ describe("'rename' events", () => {
   })
 
   it("can rename twice and keep track of the correct file name", () => {
-    cy.startNeovim().then((dir) => {
+    cy.startNeovim().then((nvim) => {
       // the default file should already be open
-      cy.contains(dir.contents["initial-file.txt"].name)
+      cy.contains(nvim.dir.contents["initial-file.txt"].name)
       cy.contains("If you see this text, Neovim is ready!")
 
       // start yazi
@@ -208,13 +210,14 @@ describe("'rename' events", () => {
   it("can publish YaziRenamedOrMoved events when a file is renamed", () => {
     cy.startNeovim({
       startupScriptModifications: ["notify_rename_events.lua"],
-    }).then((dir) => {
+    }).then((nvim) => {
       // the default file should already be open
-      cy.contains(dir.contents["initial-file.txt"].name)
+      cy.contains(nvim.dir.contents["initial-file.txt"].name)
       cy.contains("If you see this text, Neovim is ready!")
 
-      // start yazi
+      // start yazi and wait for it to be ready
       cy.typeIntoTerminal("{upArrow}")
+      cy.contains("config-modifications" satisfies MyTestDirectoryFile)
 
       // start file renaming
       cy.typeIntoTerminal("r")
@@ -233,8 +236,12 @@ describe("'rename' events", () => {
       // yazi should now be closed
       cy.contains("-- TERMINAL --").should("not.exist")
 
-      cy.typeIntoTerminal(":mes{enter}")
-      cy.contains("Just received a YaziRenamedOrMoved event!")
+      nvim
+        .runLuaCode({ luaCode: `return _G.yazi_test_events` })
+        .should((result) => {
+          const events = result.value as unknown[]
+          expect(events).to.have.length(1)
+        })
     })
   })
 
@@ -243,13 +250,14 @@ describe("'rename' events", () => {
       startupScriptModifications: [
         "modify_yazi_config_log_yazi_closed_successfully.lua",
       ],
-    }).then((dir) => {
+    }).then((nvim) => {
       // the default file should already be open
-      cy.contains(dir.contents["initial-file.txt"].name)
+      cy.contains(nvim.dir.contents["initial-file.txt"].name)
       cy.contains("If you see this text, Neovim is ready!")
 
-      // start yazi
+      // start yazi and wait for it to be ready
       cy.typeIntoTerminal("{upArrow}")
+      cy.contains("config-modifications" satisfies MyTestDirectoryFile)
 
       // move to another directory
       cy.typeIntoTerminal(
@@ -264,9 +272,19 @@ describe("'rename' events", () => {
       // yazi should now be closed
       cy.contains("-- TERMINAL --").should("not.exist")
 
-      cy.contains("yazi_closed_successfully hook")
-      cy.contains("last_directory = ")
-      cy.contains("dir with spaces")
+      nvim
+        .runLuaCode({
+          luaCode: `return _G.yazi_closed_successfully_hook_test_results`,
+        })
+        .should((result) => {
+          debugger
+          assert(result.value)
+          assert(typeof result.value === "object")
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+          const data = result.value as any
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          expect(data["last_directory"]).to.match(/dir with spaces$/)
+        })
     })
   })
 
@@ -274,12 +292,12 @@ describe("'rename' events", () => {
     it("emits events the user has subscribed to", () => {
       cy.startNeovim({
         startupScriptModifications: ["notify_custom_events.lua"],
-      }).then((dir) => {
+      }).then((nvim) => {
         // The user can set a config option to specify custom yazi dds events that
         // they want to subscribe to. These are emitted as YaziDDSCustom events.
         cy.contains("If you see this text, Neovim is ready!")
         cy.typeIntoTerminal("{upArrow}")
-        cy.contains(dir.contents["file2.txt"].name)
+        cy.contains(nvim.dir.contents["file2.txt"].name)
 
         // publish the custom MyMessageNoData event that we subscribed to in
         // notify_custom_events.lua
@@ -289,16 +307,16 @@ describe("'rename' events", () => {
         cy.typeIntoTerminal("{control+h}")
 
         cy.typeIntoTerminal("q")
-        cy.contains(dir.contents["file2.txt"].name).should("not.exist")
-        cy.typeIntoTerminal(":messages{enter}", { delay: 0 })
-
-        // should see a message for the event kind MyMessageNoData that has no data
-        // this checks that events without data are supported
-        cy.contains("Just received a YaziDDSCustom event 'MyMessageNoData'!")
-
-        // should see the data for MyMessageWithData
-        cy.contains("Just received a YaziDDSCustom event 'MyMessageWithData'!")
-        cy.contains("somedata")
+        cy.contains(nvim.dir.contents["file2.txt"].name).should("not.exist")
+        nvim.runExCommand({ command: "messages" }).should((result) => {
+          expect(result.value).to.match(
+            /Just received a YaziDDSCustom event 'MyMessageNoData'!/,
+          )
+          expect(result.value).to.match(
+            /Just received a YaziDDSCustom event 'MyMessageWithData'!/,
+          )
+          expect(result.value).to.match(/somedata/)
+        })
       })
     })
   })

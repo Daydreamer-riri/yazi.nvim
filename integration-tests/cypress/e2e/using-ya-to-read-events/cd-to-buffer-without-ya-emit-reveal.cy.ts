@@ -27,8 +27,10 @@ describe("'cd' to another buffer's directory", () => {
       },
       startupScriptModifications: [
         "modify_yazi_config_and_add_hovered_buffer_background.lua",
+        "modify_yazi_config_don't_use_ya_emit_reveal.lua",
       ],
-    }).then(() => {
+    }).then((_nvim) => {
+      assertDoesNotUseEmitReveal()
       // sanity check to make sure the files are open
       cy.contains(view.leftFile.text)
       cy.contains(view.centerFile.text)
@@ -88,8 +90,10 @@ describe("'cd' to another buffer's directory", () => {
       },
       startupScriptModifications: [
         "modify_yazi_config_and_add_hovered_buffer_background.lua",
+        "modify_yazi_config_don't_use_ya_emit_reveal.lua",
       ],
-    }).then(() => {
+    }).then((_nvim) => {
+      assertDoesNotUseEmitReveal()
       isNotHoveredInNeovim(view.leftAndCenterFile.text)
       isNotHoveredInNeovim(view.rightFile.text)
 
@@ -120,7 +124,11 @@ describe("'cd' to another buffer's directory", () => {
   it("can tab to the directory of just a single buffer", () => {
     cy.startNeovim({
       filename: "file2.txt",
-    }).then((dir) => {
+      startupScriptModifications: [
+        "modify_yazi_config_don't_use_ya_emit_reveal.lua",
+      ],
+    }).then((nvim) => {
+      assertDoesNotUseEmitReveal()
       cy.contains("Hello")
 
       cy.typeIntoTerminal("{upArrow}")
@@ -133,7 +141,7 @@ describe("'cd' to another buffer's directory", () => {
       // enter the directory and make sure its contents are shown
       cy.typeIntoTerminal("l")
       cy.contains(
-        dir.contents.routes.contents["posts.$postId"].contents["route.tsx"]
+        nvim.dir.contents.routes.contents["posts.$postId"].contents["route.tsx"]
           .name,
       )
 
@@ -141,3 +149,9 @@ describe("'cd' to another buffer's directory", () => {
     })
   })
 })
+
+function assertDoesNotUseEmitReveal() {
+  cy.nvim_runLuaCode({
+    luaCode: `assert(require("yazi").config.future_features.ya_emit_reveal == false)`,
+  })
+}
