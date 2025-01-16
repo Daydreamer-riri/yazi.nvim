@@ -5,6 +5,7 @@ local M = {}
 ---@class (exact) YaziFloatingWindow
 ---@field new fun(config: YaziConfig): YaziFloatingWindow
 ---@field win integer floating_window_id
+---@field snacks_win snacks.win | nil
 ---@field content_buffer integer
 ---@field config YaziConfig
 ---@field on_resized fun(event: yazi.FloatingWindowResizedEvent): nil # allows resizing the contents (the yazi terminal) inside of the floating window
@@ -30,6 +31,18 @@ end
 
 function YaziFloatingWindow:close()
   pcall(self.cleanup)
+
+  if self.snacks_win then
+    self.snacks_win:close({ buf = true })
+    Log:debug(
+      string.format(
+        "YaziFloatingWindow closing (content_buffer: %s, win: %s)",
+        self.content_buffer,
+        self.win
+      )
+    )
+    return
+  end
 
   if vim.api.nvim_win_is_valid(self.win) then
     vim.api.nvim_win_close(self.win, true)
@@ -100,56 +113,76 @@ function YaziFloatingWindow:open_and_display()
     border = self.config.yazi_floating_window_border,
   }
 
-  local yazi_buffer = vim.api.nvim_create_buf(false, true)
-  -- create file window, enter the window, and use the options defined in opts
-  local win = vim.api.nvim_open_win(yazi_buffer, true, opts)
-  self.win = win
-  self.content_buffer = yazi_buffer
-  Log:debug(
-    string.format(
-      "YaziFloatingWindow opening (content_buffer: %s, win: %s)",
-      self.content_buffer,
-      self.win
-    )
-  )
-
-  vim.bo[yazi_buffer].filetype = "yazi"
-
-  vim.cmd("setlocal bufhidden=hide")
-  vim.cmd("setlocal nocursorcolumn")
   vim.api.nvim_set_hl(0, "YaziFloat", { link = "Normal", default = true })
-  vim.cmd("setlocal winhl=NormalFloat:YaziFloat")
-  vim.cmd("set winblend=" .. self.config.yazi_floating_window_winblend)
+  local yazi_buffer = vim.api.nvim_create_buf(false, true)
+  local win
+  if Snacks then
+    local _win = Snacks.win({
+      style = "float",
+      buf = yazi_buffer,
+      width = dimensions.width,
+      height = dimensions.height,
+      border = self.config.yazi_floating_window_border,
+      mouse = true,
+      wo = {
+        winblend = self.config.yazi_floating_window_winblend,
+        cursorcolumn = false,
+        cursorline = false,
+        winhl = "NormalFloat:YaziFloat",
+      },
+    })
+    self.win = _win.win
+    self.snacks_win = _win
+  else
+    -- create file window, enter the window, and use the options defined in opts
+    win = vim.api.nvim_open_win(yazi_buffer, true, opts)
+    self.win = win
+    self.content_buffer = yazi_buffer
+    Log:debug(
+      string.format(
+        "YaziFloatingWindow opening (content_buffer: %s, win: %s)",
+        self.content_buffer,
+        self.win
+      )
+    )
+
+    vim.bo[yazi_buffer].filetype = "yazi"
+
+    vim.cmd("setlocal bufhidden=hide")
+    vim.cmd("setlocal nocursorcolumn")
+    vim.cmd("setlocal winhl=NormalFloat:YaziFloat")
+    vim.cmd("set winblend=" .. self.config.yazi_floating_window_winblend)
+
+    vim.api.nvim_create_autocmd({ "VimResized" }, {
+      buffer = yazi_buffer,
+      callback = function()
+        local dims = get_window_dimensions(self.config)
+
+        vim.api.nvim_win_set_config(win, {
+          width = dims.width,
+          height = dims.height,
+          row = dims.row,
+          col = dims.col,
+          relative = "editor",
+          style = "minimal",
+        })
+
+        self.on_resized({
+          win_height = dims.height,
+          win_width = dims.width,
+        })
+      end,
+    })
+
+    if self.config.enable_mouse_support == true then
+      self:add_hacky_mouse_support(yazi_buffer)
+    end
+  end
 
   vim.api.nvim_create_autocmd({ "WinLeave" }, {
     buffer = yazi_buffer,
     callback = function()
       self:close()
-    end,
-  })
-
-  if self.config.enable_mouse_support == true then
-    self:add_hacky_mouse_support(yazi_buffer)
-  end
-
-  vim.api.nvim_create_autocmd({ "VimResized" }, {
-    buffer = yazi_buffer,
-    callback = function()
-      local dims = get_window_dimensions(self.config)
-
-      vim.api.nvim_win_set_config(win, {
-        width = dims.width,
-        height = dims.height,
-        row = dims.row,
-        col = dims.col,
-        relative = "editor",
-        style = "minimal",
-      })
-
-      self.on_resized({
-        win_height = dims.height,
-        win_width = dims.width,
-      })
     end,
   })
 
