@@ -1,12 +1,5 @@
 # 🎲 A Neovim Plugin for [yazi](https://github.com/sxyazi/yazi.git)
 
-> [!TIP]
->
-> 2024-07: Some users are experiencing issues updating with lazy.nvim, and have
-> reported uninstalling and reinstalling the plugin seems to work. More
-> information can be found in
-> [#198](https://github.com/mikavilpas/yazi.nvim/pull/198).
-
 <a href="https://dotfyle.com/plugins/mikavilpas/yazi.nvim">
   <img src="https://dotfyle.com/plugins/mikavilpas/yazi.nvim/shield?style=flat-square" alt="shield image for plugin usage" /> </a>
 
@@ -137,6 +130,35 @@ end)
 ```
 
 </details>
+
+## ⌨️ Keybindings
+
+These are the default keybindings that are available when yazi is open:
+
+- `<f1>`: show the help menu
+- `<c-v>`: open the selected file(s) in vertical splits
+- `<c-x>`: open the selected file(s) in horizontal splits
+- `<c-t>`: open the selected file(s) in new tabs
+- `<c-q>`: send the selected file(s) to the quickfix list
+- There are also integrations to other plugins, which you need to install
+  separately:
+  - `<c-s>`: search in the current yazi directory using
+    [telescope](https://github.com/nvim-telescope/telescope.nvim)'s `live_grep`,
+    if available. Optionally you can use
+    [fzf-lua.nvim](https://github.com/ibhagwan/fzf-lua) or provide your own
+    implementation - see the instructions in the configuration section for more
+    info.
+    - if multiple files/directories are selected in yazi, the search and replace
+      will only be done in the selected files/directories
+  - `<c-g>`: search and replace in the current yazi directory using
+    [grug-far](https://github.com/MagicDuck/grug-far.nvim), if available
+    - if multiple files/directories are selected in yazi, the operation is
+      limited to those only
+  - `<c-y>`: copy the relative path of the selected file(s) to the clipboard.
+    Requires GNU `realpath` or `grealpath` on OSX
+  - `<tab>`: make yazi jump to the open buffers in Neovim. See
+    [#232](https://github.com/mikavilpas/yazi.nvim/pull/232) for more
+    information
 
 ### ⚙️⚙️ Advanced configuration
 
@@ -306,35 +328,6 @@ You can optionally configure yazi.nvim by setting any of the options below.
 > `require('yazi').yazi({open_for_directories = true})` to override some of your
 > default settings for this specific call.
 
-## ⌨️ Keybindings
-
-These are the default keybindings that are available when yazi is open:
-
-- `<f1>`: show the help menu
-- `<c-v>`: open the selected file(s) in vertical splits
-- `<c-x>`: open the selected file(s) in horizontal splits
-- `<c-t>`: open the selected file(s) in new tabs
-- `<c-q>`: send the selected file(s) to the quickfix list
-- There are also integrations to other plugins, which you need to install
-  separately:
-  - `<c-s>`: search in the current yazi directory using
-    [telescope](https://github.com/nvim-telescope/telescope.nvim)'s `live_grep`,
-    if available. Optionally you can use
-    [fzf-lua.nvim](https://github.com/ibhagwan/fzf-lua) or provide your own
-    implementation - see the instructions in the configuration section for more
-    info.
-    - if multiple files/directories are selected in yazi, the search and replace
-      will only be done in the selected files/directories
-  - `<c-g>`: search and replace in the current yazi directory using
-    [grug-far](https://github.com/MagicDuck/grug-far.nvim), if available
-    - if multiple files/directories are selected in yazi, the operation is
-      limited to those only
-  - `<c-y>`: copy the relative path of the selected file(s) to the clipboard.
-    Requires GNU `realpath` or `grealpath` on OSX
-  - `<tab>`: make yazi jump to the open buffers in Neovim. See
-    [#232](https://github.com/mikavilpas/yazi.nvim/pull/232) for more
-    information
-
 ## 🪛 Customizing yazi
 
 Yazi is highly customizable. It features its own plugin and event system,
@@ -358,3 +351,6 @@ Please see [COMMUNITY.md](./COMMUNITY.md) for more information on the project!
 ## In case there are issues
 
 See [reproducing-issues.md](./documentation/reproducing-issues.md).
+
+Powershell users: see [here](https://github.com/mikavilpas/yazi.nvim/issues/675)
+for Powershell specific configuration.
